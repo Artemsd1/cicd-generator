@@ -1,0 +1,81 @@
+# GitLab CI/CD для Node.js проекта
+image: node:18
+
+stages:
+  - install
+  - test
+  - build
+  - docker-build
+  - deploy
+
+variables:
+  NODE_ENV: "production"
+  DOCKER_DRIVER: overlay2
+
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - apt-get update -qq && apt-get install -y -qq git curl
+
+install_dependencies:
+  stage: install
+  script:
+    - npm install --frozen-lockfile
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 day
+
+run_tests:
+  stage: test
+  script:
+    - npm run test
+  coverage: '/Statements\s*:\s*(\d+\.?\d*)%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+
+build_application:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+      - dist/
+      - .next/
+    expire_in: 1 day
+  only:
+    - master
+    - develop
+
+docker_build:
+  stage: docker-build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - master
+
+deploy_production:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+    - echo "docker run -d -p 80:3000 $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  environment:
+    name: production
+    url: https://cicd-generator.example.com
+  only:
+    - master
+  when: manual

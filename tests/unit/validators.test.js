@@ -23,19 +23,17 @@ test:
   });
 
   test('должен отклонять некорректный YAML', async () => {
+    // Используем действительно некорректный YAML
     const invalidYaml = `
-image: node:18
-stages:
-  - test
-  - build
-test:
-  script: npm test
-  invalid_indent: wrong
-`;
-
+  image: node:18
+  stages: [
+    - test
+    invalid syntax here without proper closing
+  `;
+  
     const result = await validator.validate(invalidYaml);
     expect(result).toBe(false);
-  });
+});
 
   test('должен валидировать структуру с обязательными полями', () => {
     const yamlWithRequiredFields = `

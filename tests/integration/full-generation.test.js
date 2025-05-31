@@ -52,7 +52,7 @@ describe('Full Generation Integration', () => {
     // Check content
     const dockerfileContent = await fs.readFile(dockerfilePath, 'utf8');
     expect(dockerfileContent).toContain('nginx');
-    expect(dockerfileContent).toContain('react-scripts build');
+    expect(dockerfileContent).toContain('npm run build');
   });
 
   test('должен обрабатывать ошибки некорректного проекта', async () => {

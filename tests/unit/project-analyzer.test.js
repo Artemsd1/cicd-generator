@@ -2,6 +2,7 @@ const ProjectAnalyzer = require('../../src/core/project-analyzer');
 const FileManager = require('../../src/utils/file-manager');
 
 jest.mock('../../src/utils/file-manager');
+jest.mock('../../src/core/plugin-manager');
 
 describe('ProjectAnalyzer', () => {
   let analyzer;
@@ -10,6 +11,27 @@ describe('ProjectAnalyzer', () => {
   beforeEach(() => {
     analyzer = new ProjectAnalyzer();
     mockFileManager = new FileManager();
+    analyzer.fileManager = mockFileManager;
+    
+    // ЗАМЕНИТЬ весь блок mockPluginManager на:
+    const mockPlugin = {
+      detect: jest.fn().mockResolvedValue(true),
+      getName: jest.fn().mockReturnValue('nodejs'),
+      analyze: jest.fn().mockResolvedValue({
+        framework: 'react',
+        type: 'nodejs',
+        name: 'test-app'
+      })
+    };
+    
+    const mockPluginManager = {
+      loadPlugins: jest.fn(),
+      getPlugins: jest.fn().mockReturnValue([mockPlugin]),
+      getAnalyzer: jest.fn().mockReturnValue(mockPlugin)  // ← ЭТА СТРОКА ИСПРАВЛЯЕТ ОШИБКУ
+    };
+    
+    analyzer.pluginManager = mockPluginManager;
+    mockFileManager.exists.mockResolvedValue(true);
   });
 
   test('должен анализировать Node.js проект', async () => {
