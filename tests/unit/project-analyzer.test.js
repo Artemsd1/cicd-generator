@@ -13,7 +13,6 @@ describe('ProjectAnalyzer', () => {
     mockFileManager = new FileManager();
     analyzer.fileManager = mockFileManager;
     
-    // ЗАМЕНИТЬ весь блок mockPluginManager на:
     const mockPlugin = {
       detect: jest.fn().mockResolvedValue(true),
       getName: jest.fn().mockReturnValue('nodejs'),
@@ -27,7 +26,7 @@ describe('ProjectAnalyzer', () => {
     const mockPluginManager = {
       loadPlugins: jest.fn(),
       getPlugins: jest.fn().mockReturnValue([mockPlugin]),
-      getAnalyzer: jest.fn().mockReturnValue(mockPlugin)  // ← ЭТА СТРОКА ИСПРАВЛЯЕТ ОШИБКУ
+      getAnalyzer: jest.fn().mockReturnValue(mockPlugin) 
     };
     
     analyzer.pluginManager = mockPluginManager;

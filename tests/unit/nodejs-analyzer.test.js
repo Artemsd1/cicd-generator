@@ -22,7 +22,7 @@ describe('NodeJSAnalyzer', () => {
   
     mockFileManager.readJson.mockResolvedValue(packageJson);
     
-    // ИСПРАВИТЬ: более точный мок для exists
+  
     mockFileManager.exists.mockImplementation((path) => {
       if (path.includes('yarn.lock')) return Promise.resolve(false);
       if (path.includes('pnpm-lock.yaml')) return Promise.resolve(false);
@@ -32,7 +32,7 @@ describe('NodeJSAnalyzer', () => {
     const result = await analyzer.analyze('/test/path');
     
     expect(result.framework).toBe('react');
-    expect(result.packageManager).toBe('npm'); // теперь будет npm
+    expect(result.packageManager).toBe('npm'); 
   });
 
   test('должен определять Express API проект', async () => {
