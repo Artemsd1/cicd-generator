@@ -3,6 +3,8 @@ const GitLabCIGenerator = require('../generators/gitlab-ci-generator');
 const YamlValidator = require('../validators/yaml-validator');
 const DockerfileValidator = require('../validators/dockerfile-validator');
 const FileManager = require('../utils/file-manager');
+const path = require('path');
+const chalk = require('chalk');
 
 class ConfigGenerator {
   constructor() {
@@ -20,6 +22,20 @@ class ConfigGenerator {
     // Создание выходной директории
     await this.fileManager.ensureDir(outputPath);
 
+    // Проверка существующего Dockerfile
+    const existingDockerfile = path.join(projectData.path, 'Dockerfile');
+    if (await this.fileManager.exists(existingDockerfile)) {
+      console.log(chalk.yellow('Найден существующий Dockerfile'));
+      console.log(chalk.blue('Создаю улучшенную версию как Dockerfile.generated'));
+    }
+  
+    // Проверка существующего GitLab CI
+    const existingGitLabCI = path.join(projectData.path, '.gitlab-ci.yml');
+    if (await this.fileManager.exists(existingGitLabCI)) {
+      console.log(chalk.yellow('Найден существующий .gitlab-ci.yml'));
+      console.log(chalk.blue('Создаю улучшенную версию как .gitlab-ci.generated.yml'));
+    }
+  
     // Генерация Dockerfile
     const dockerfileContent = await this.dockerfileGenerator.generate(projectData);
     const dockerfilePath = `${outputPath}/Dockerfile`;

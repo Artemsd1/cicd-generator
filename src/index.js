@@ -12,10 +12,10 @@ class CICDGenerator {
 
   async generate(options) {
     try {
-      console.log(chalk.blue('🚀 Запуск генератора CI/CD конфигураций...'));
+      console.log(chalk.blue('Запуск генератора CI/CD конфигураций...'));
       
       // Анализ проекта
-      console.log(chalk.yellow('📊 Анализ проекта...'));
+      console.log(chalk.yellow('Анализ проекта...'));
       const projectData = await this.analyzer.analyze(options.path);
       
       if (options.verbose) {
@@ -23,11 +23,11 @@ class CICDGenerator {
       }
       
       // Генерация конфигураций
-      console.log(chalk.yellow('⚙️  Генерация конфигураций...'));
+      console.log(chalk.yellow('Генерация конфигураций...'));
       const configs = await this.generator.generate(projectData, options);
       
-      console.log(chalk.green('✅ Генерация завершена успешно!'));
-      console.log(chalk.blue('📁 Сгенерированные файлы:'));
+      console.log(chalk.green('Генерация завершена успешно!'));
+      console.log(chalk.blue('Сгенериованные файлы:'));
       configs.forEach(config => {
         console.log(chalk.gray(`  - ${config.filename}`));
       });

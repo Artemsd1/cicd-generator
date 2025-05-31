@@ -37,9 +37,34 @@ class NodeJSAnalyzer extends BaseAnalyzer {
 
   detectNodeVersion(packageJson) {
     if (packageJson.engines && packageJson.engines.node) {
-      return packageJson.engines.node.replace(/[^\d.]/g, '');
+      // Извлекаем версию из engines
+      let engineVersion = packageJson.engines.node;
+      
+      // Обрабатываем разные форматы: ">=14", "^16.0.0", "14.x"
+      const versionMatch = engineVersion.match(/(\d+)\.?(\d+)?\.?(\d+)?/);
+      if (versionMatch) {
+        const major = parseInt(versionMatch[1]);
+        const minor = parseInt(versionMatch[2] || '0');
+        
+        // Если версия слишком старая (< 14), предупреждаем но используем минимальную поддерживаемую
+        if (major < 14) {
+          console.warn(`Проект требует Node.js ${major}, но рекомендуется минимум 14. Используем 14.`);
+          return '14';
+        }
+        
+        // Если версия указана как диапазон (>=14), берем указанную
+        if (engineVersion.includes('>=')) {
+          return `${major}`;
+        }
+        
+        // Точная версия
+        return `${major}.${minor}`;
+      }
     }
-    return '18'; // По умолчанию
+    
+    // Если версия не указана, используем современную LTS
+    console.log('Версия Node.js не указана в проекте, используем LTS 18');
+    return '18';
   }
 
   async detectPackageManager(projectPath) {
@@ -83,8 +108,19 @@ class NodeJSAnalyzer extends BaseAnalyzer {
 
   detectBuildCommand(packageJson) {
     const scripts = packageJson.scripts || {};
+    
+    // Проверяем наличие build скриптов
     if (scripts.build) return 'build';
     if (scripts.compile) return 'compile';
+    if (scripts['build:prod']) return 'build:prod';
+    
+    // Для API проектов часто нет build команды
+    const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+    if (deps.express || deps.fastify || deps.koa) {
+      // API проект - обычно не требует сборки
+      return null;
+    }
+    
     return null;
   }
 

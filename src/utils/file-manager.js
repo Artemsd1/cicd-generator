@@ -22,7 +22,7 @@ class FileManager {
   async writeFile(filePath, content) {
     try {
       await fs.writeFile(filePath, content, 'utf8');
-      console.log(`✅ Файл сохранен: ${filePath}`);
+      console.log(`Файл сохранен: ${filePath}`);
     } catch (error) {
       throw new Error(`Ошибка записи файла ${filePath}: ${error.message}`);
     }
