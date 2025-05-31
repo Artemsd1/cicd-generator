@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+const { program } = require('commander');
+const CICDGenerator = require('../src/index');
+
+program
+  .version('1.0.0')
+  .description('CI/CD конфигурации генератор')
+  .option('-p, --path <path>', 'путь к проекту', process.cwd())
+  .option('-o, --output <path>', 'папка для вывода', './generated')
+  .option('-t, --type <type>', 'тип проекта (auto, react, express, nextjs)')
+  .option('-v, --verbose', 'подробный вывод')
+  .action(async (options) => {
+    try {
+      const generator = new CICDGenerator();
+      await generator.generate(options);
+    } catch (error) {
+      console.error('Ошибка:', error.message);
+      process.exit(1);
+    }
+  });
+
+program.parse();
