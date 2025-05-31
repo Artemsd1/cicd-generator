@@ -27,7 +27,7 @@ class CICDGenerator {
       const configs = await this.generator.generate(projectData, options);
       
       console.log(chalk.green('Генерация завершена успешно!'));
-      console.log(chalk.blue('Сгенериованные файлы:'));
+      console.log(chalk.blue('Сгенерированные файлы:'));
       configs.forEach(config => {
         console.log(chalk.gray(`  - ${config.filename}`));
       });
