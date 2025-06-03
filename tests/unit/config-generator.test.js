@@ -16,15 +16,12 @@ describe("ConfigGenerator", () => {
     mockFileManager = new FileManager();
     generator.fileManager = mockFileManager;
 
-    // Mock successful validation
     generator.yamlValidator.validate.mockResolvedValue(true);
     generator.dockerfileValidator.validate.mockResolvedValue(true);
 
-    // Mock successful generation
     generator.dockerfileGenerator.generate.mockResolvedValue("FROM node:18");
     generator.gitlabCIGenerator.generate.mockResolvedValue("image: node:18");
 
-    // Mock file operations
     mockFileManager.ensureDir.mockResolvedValue();
     mockFileManager.writeFile.mockResolvedValue();
   });
@@ -50,7 +47,7 @@ describe("ConfigGenerator", () => {
 
     const result = await generator.generate(projectData, options);
 
-    expect(result).toHaveLength(3); // Dockerfile, GitLab CI, dockerignore
+    expect(result).toHaveLength(3); 
     expect(result[0].filename).toBe("Dockerfile");
     expect(result[1].filename).toBe(".gitlab-ci.yml");
     expect(result[2].filename).toBe(".dockerignore");

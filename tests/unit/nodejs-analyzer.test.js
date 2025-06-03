@@ -26,7 +26,7 @@ describe('NodeJSAnalyzer', () => {
     mockFileManager.exists.mockImplementation((path) => {
       if (path.includes('yarn.lock')) return Promise.resolve(false);
       if (path.includes('pnpm-lock.yaml')) return Promise.resolve(false);
-      return Promise.resolve(true); // package.json exists
+      return Promise.resolve(true); 
     });
   
     const result = await analyzer.analyze('/test/path');
@@ -58,7 +58,7 @@ describe('NodeJSAnalyzer', () => {
     expect(result.framework).toBe('express');
     expect(result.packageManager).toBe('npm');
     expect(result.hasTests).toBe(true);
-    expect(result.buildCommand).toBe(null); // API usually no build
+    expect(result.buildCommand).toBe(null); 
   });
 
   test('должен определять Next.js проект', async () => {
